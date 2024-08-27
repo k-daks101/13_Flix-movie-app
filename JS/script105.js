@@ -130,16 +130,16 @@ function hideSpinner()
 // Initializing the app
 function init() {
   switch (global.currentPage) {
-    case '/13_Flix-movie-app/index.html':
+    case '/index.html':
       displayPopularMovies(); // Ensure this function is called to populate the homepage
       break;
 
-    case '/13_Flix-movie-app/shows.html':
+    case '/shows.html':
       //console.log('Shows');
       displayPopularShows()
       break;
 
-    case '/13_Flix-movie-app/movie-details.html':
+    case '/movie-details.html':
       console.log('Movie Details');
       break;
   }

@@ -14,6 +14,11 @@ function HighlitActiveLink() {
   });
 }
 
+// function addCommasToNumber(number)
+// {
+//   return number.toString().replace(/\B(?=\d{3}) + (?!\d))/g, '')
+// }
+
 // Function to get popular movies for homepage
 async function displayPopularMovies() {
   const { results } = await fetchAPIData('movie/popular');
@@ -59,6 +64,85 @@ async function displayPopularMovies() {
 
 //from displaying popular movies, we are about to display popular shows
 
+//Function display movie details
+async function displayMovieDetails()
+{
+  console.log('Full URL:', window.location.href);
+  console.log('Search part:', window.location.search);
+  
+   const movieId = window.location.search
+    console.log(movieId);
+
+   const movie = await fetchAPIData(`movie/${movieId}`);
+     console.log('Movie ID:', movieId);
+
+     if (!movieId) {
+      console.error('No movie ID found in the URL.');
+      document.querySelector('#movie-details').innerHTML = `<p>Movie not found. Please check the URL.</p>`;
+      return;
+    }
+
+
+   const div = document.createElement('div');
+
+   div.innerHTML = 
+   
+   `
+<div class="details-top">
+    
+     <div>
+      ${
+     movie.poster_path
+       ? `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
+     class="card-img-top"
+     alt="${movie.title}"/>`
+       : `<img src="../images/no-image.jpg"
+     class="card-img-top"
+     alt="${movie.title}"/>`
+   }
+     </div>
+       <h2>${movie.title}</h2>
+       <p>
+         <i class="fas fa-star text-primary"></i>
+         ${movie.vote_average.toFixed(1)} / 10
+       </p>
+       <p class="text-muted">Release Date: ${movie.release_date}</p>
+       <p>
+         ${movie.overview}
+       </p>
+       <h5>Genres</h5>
+       <ul class="list-group">
+       ${movies.genres.map((genre) => `<li>${genre.name}</li>`).join('')}  
+       >
+       </ul>
+       <a href='${movie.homepage}' class="btn">Visit Movie Homepage</a>
+     </div>
+   </div>
+   <div class="details-bottom">
+     <h2>Movie Info</h2>
+     <ul>
+       <li><span class="text-secondary">Budget:</span> $${addCommasToNumber(movie.budget)}</li>
+       <li><span class="text-secondary">Revenue:</span> $${addCommasToNumber(movie.revenue)}</li>
+       <li><span class="text-secondary">Runtime:</span>$${movie.runtime} minutes </li>
+       <li><span class="text-secondary">Status:</span> ${movie.status}</li>
+     </ul>
+     <h4>Production Companies</h4>
+     <div class="list-group">
+     ${movie.production_companies.map((company) =>`<span>${company.name}</span>`).join(',')}
+     </div>
+   </div>
+
+   `
+
+
+  document.querySelector('#movie-details').appendChild(div);
+
+}
+
+
+
+
+
 
 async function displayPopularShows() {
   const { results } = await fetchAPIData('tv/popular');
@@ -72,10 +156,10 @@ async function displayPopularShows() {
           show.poster_path
             ? `<img src="https://image.tmdb.org/t/p/w500${show.poster_path}"
           class="card-img-top"
-          alt="${show.name}"/>`
+          alt="${show.title}"/>`
             : `<img src="../images/no-image.jpg"
           class="card-img-top"
-          alt="${show.name}"/>`
+          alt="${show.title}"/>`
         }
       </a>
       <div class="card-body">
@@ -96,6 +180,86 @@ async function displayPopularShows() {
   
  
 }
+
+
+
+//Function display show details
+async function displayShowDetails()
+{
+  console.log('Full URL:', window.location.href);
+  console.log('Search part:', window.location.search);
+  
+   const showId = window.location.search
+    console.log(showId);
+
+   const movie = await fetchAPIData(`tv/${showId}`);
+     console.log('Movie ID:', movieId);
+
+     if (!movieId) {
+      console.error('No movie ID found in the URL.');
+      document.querySelector('#movie-details').innerHTML = `<p>Movie not found. Please check the URL.</p>`;
+      return;
+    }
+
+
+   const div = document.createElement('div');
+
+   div.innerHTML = 
+   
+   `
+<div class="details-top">
+    
+     <div>
+      ${
+     movie.poster_path
+       ? `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
+     class="card-img-top"
+     alt="${movie.title}"/>`
+       : `<img src="../images/no-image.jpg"
+     class="card-img-top"
+     alt="${movie.title}"/>`
+   }
+     </div>
+       <h2>${movie.title}</h2>
+       <p>
+         <i class="fas fa-star text-primary"></i>
+         ${movie.vote_average.toFixed(1)} / 10
+       </p>
+       <p class="text-muted">Release Date: ${movie.release_date}</p>
+       <p>
+         ${movie.overview}
+       </p>
+       <h5>Genres</h5>
+       <ul class="list-group">
+       ${movies.genres.map((genre) => `<li>${genre.name}</li>`).join('')}  
+       >
+       </ul>
+       <a href='${movie.homepage}' class="btn">Visit Movie Homepage</a>
+     </div>
+   </div>
+   <div class="details-bottom">
+     <h2>Movie Info</h2>
+     <ul>
+       <li><span class="text-secondary">Budget:</span> $${addCommasToNumber(movie.budget)}</li>
+       <li><span class="text-secondary">Revenue:</span> $${addCommasToNumber(movie.revenue)}</li>
+       <li><span class="text-secondary">Runtime:</span>$${movie.runtime} minutes </li>
+       <li><span class="text-secondary">Status:</span> ${movie.status}</li>
+     </ul>
+     <h4>Production Companies</h4>
+     <div class="list-group">
+     ${movie.production_companies.map((company) =>`<span>${company.name}</span>`).join(',')}
+     </div>
+   </div>
+
+   `
+
+
+  document.querySelector('#show-details').appendChild(div);
+
+}
+
+
+
   
 
 
@@ -140,7 +304,7 @@ function init() {
       break;
 
     case '/movie-details.html':
-      console.log('Movie Details');
+      displayMovieDetails()
       break;
   }
 
@@ -148,15 +312,6 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
-
-
-
-
-
-
-
-
 
 
 

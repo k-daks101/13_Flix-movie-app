@@ -142,7 +142,7 @@ async function displayMovieDetails()
      <ul>
        <li><span class="text-secondary">Budget:</span> $${addCommasToNumber(movie.budget)}</li>
        <li><span class="text-secondary">Revenue:</span> $${addCommasToNumber(movie.revenue)}</li>
-       <li><span class="text-secondary">Runtime:</span>$${movie.runtime} minutes </li>
+       <li><span class="text-secondary">Runtime:</span>${movie.runtime} minutes </li>
        <li><span class="text-secondary">Status:</span> ${movie.status}</li>
      </ul>
      <h4>Production Companies</h4>

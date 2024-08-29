@@ -170,7 +170,7 @@ async function displayPopularShows() {
     const div = document.createElement('div'); // Fixed typo: Changed "docuent" to "document"
     div.classList.add('card'); // Corrected syntax: replaced '=' with 'add' method
     div.innerHTML = `
-      <a href="movie-details.html?id=${show.id}">
+      <a href="tv-details.html?id=${show.id}">
         ${
           show.poster_path
             ? `<img src="https://image.tmdb.org/t/p/w500${show.poster_path}"
@@ -205,13 +205,22 @@ async function displayPopularShows() {
 //Function display show details
 async function displayShowDetails()
 {
-  console.log('Full URL:', window.location.href);
-  console.log('Search part:', window.location.search);
-  
-   const showId = window.location.search.split('=')[1]
-    console.log(showId);
 
-   const movie = await fetchAPIData(`tv/${showId}`);
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const showId = urlParams.get('id');
+
+  console.log('Show ID:', showId);  // Verifying the show ID
+
+
+  // console.log('Full URL:', window.location.href);
+  // console.log('Search part:', window.location.search);
+  
+  //  const showId = window.location.search.split('=')[1]
+  //   console.log(showId);
+
+   const show = await fetchAPIData(`tv/${showId}`);
      console.log('Show ID:', showId);
 
      if (!showId) {
@@ -220,6 +229,7 @@ async function displayShowDetails()
       return;
     }
 
+    
 
    const div = document.createElement('div');
 
@@ -244,13 +254,13 @@ async function displayShowDetails()
          <i class="fas fa-star text-primary"></i>
          ${show.vote_average.toFixed(1)} / 10
        </p>
-       <p class="text-muted">Last Air  Date: ${last_air_date}</p>
+       <p class="text-muted">Last Air  Date: ${show.last_air_date}</p>
        <p>
          ${show.overview}
        </p>
        <h5>Genres</h5>
        <ul class="list-group">
-       ${movies.genres.map((genre) => `<li>${genre.name}</li>`).join('')}  
+       ${show.genres.map((genre) => `<li>${genre.name}</li>`).join('')}  
        >
        </ul>
        <a href='${show.homepage}' class="btn">Visit Show  Homepage</a>

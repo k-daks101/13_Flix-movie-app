@@ -14,10 +14,10 @@ function HighlitActiveLink() {
   });
 }
 
-// function addCommasToNumber(number)
-// {
-//   return number.toString().replace(/\B(?=\d{3}) + (?!\d))/g, '')
-// }
+function addCommasToNumber(number)
+ {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");  //From stackoverflow
+ }
 
 // Function to get popular movies for homepage
 async function displayPopularMovies() {
@@ -62,25 +62,44 @@ async function displayPopularMovies() {
   */
 
 
-//from displaying popular movies, we are about to display popular shows
+//from displaying popular movies, we are about to display popular show
+
+
 
 //Function display movie details
 async function displayMovieDetails()
 {
-  console.log('Full URL:', window.location.href);
-  console.log('Search part:', window.location.search);
-  
-   const movieId = window.location.search
-    console.log(movieId);
 
-   const movie = await fetchAPIData(`movie/${movieId}`);
-     console.log('Movie ID:', movieId);
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const movieId = urlParams.get('id');
+
+  console.log('Movie ID:', movieId);  // Verifying the movie ID
+
+
+
+  
+  // console.log('Full URL:', window.location.href);
+  // console.log('Search part:', window.location.search);
+  
+  //   const movieId = window.location.search.split('=')[1]
+  //   console.log(movieId);
+
 
      if (!movieId) {
       console.error('No movie ID found in the URL.');
       document.querySelector('#movie-details').innerHTML = `<p>Movie not found. Please check the URL.</p>`;
       return;
     }
+
+    const movie = await fetchAPIData(`movie/${movieId}`);
+
+     if (!movie || movie.success === false) {
+      console.error('Failed to fetch movie data:', movie ? movie.status_message : 'Unknown error');
+      alert('Movie not found or invalid ID.');
+      return;
+     }
+    console.log('Movie ID:', movieId);
 
 
    const div = document.createElement('div');
@@ -104,7 +123,6 @@ async function displayMovieDetails()
        <h2>${movie.title}</h2>
        <p>
          <i class="fas fa-star text-primary"></i>
-         ${movie.vote_average.toFixed(1)} / 10
        </p>
        <p class="text-muted">Release Date: ${movie.release_date}</p>
        <p>
@@ -112,10 +130,11 @@ async function displayMovieDetails()
        </p>
        <h5>Genres</h5>
        <ul class="list-group">
-       ${movies.genres.map((genre) => `<li>${genre.name}</li>`).join('')}  
+       ${movie.genres.map((genre) => `<li>${genre.name}</li>`).join('')}  
        >
        </ul>
-       <a href='${movie.homepage}' class="btn">Visit Movie Homepage</a>
+       <a href="${movie.homepage}" target = "_blank" class ="btn">Visit Homepage</a>
+      
      </div>
    </div>
    <div class="details-bottom">
@@ -189,15 +208,15 @@ async function displayShowDetails()
   console.log('Full URL:', window.location.href);
   console.log('Search part:', window.location.search);
   
-   const showId = window.location.search
+   const showId = window.location.search.split('=')[1]
     console.log(showId);
 
    const movie = await fetchAPIData(`tv/${showId}`);
-     console.log('Movie ID:', movieId);
+     console.log('Show ID:', showId);
 
-     if (!movieId) {
+     if (!showId) {
       console.error('No movie ID found in the URL.');
-      document.querySelector('#movie-details').innerHTML = `<p>Movie not found. Please check the URL.</p>`;
+      document.querySelector('#show-details').innerHTML = `<p>Movie not found. Please check the URL.</p>`;
       return;
     }
 
@@ -211,43 +230,42 @@ async function displayShowDetails()
     
      <div>
       ${
-     movie.poster_path
-       ? `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
+     show.poster_path
+       ? `<img src="https://image.tmdb.org/t/p/w500${show.poster_path}"
      class="card-img-top"
-     alt="${movie.title}"/>`
+     alt="${show.name}"/>`
        : `<img src="../images/no-image.jpg"
      class="card-img-top"
-     alt="${movie.title}"/>`
+     alt="${show.name}"/>`
    }
      </div>
-       <h2>${movie.title}</h2>
+       <h2>${show.name}</h2>
        <p>
          <i class="fas fa-star text-primary"></i>
-         ${movie.vote_average.toFixed(1)} / 10
+         ${show.vote_average.toFixed(1)} / 10
        </p>
-       <p class="text-muted">Release Date: ${movie.release_date}</p>
+       <p class="text-muted">Last Air  Date: ${last_air_date}</p>
        <p>
-         ${movie.overview}
+         ${show.overview}
        </p>
        <h5>Genres</h5>
        <ul class="list-group">
        ${movies.genres.map((genre) => `<li>${genre.name}</li>`).join('')}  
        >
        </ul>
-       <a href='${movie.homepage}' class="btn">Visit Movie Homepage</a>
+       <a href='${show.homepage}' class="btn">Visit Show  Homepage</a>
      </div>
    </div>
    <div class="details-bottom">
-     <h2>Movie Info</h2>
+     <h2>Show Info</h2>
      <ul>
-       <li><span class="text-secondary">Budget:</span> $${addCommasToNumber(movie.budget)}</li>
-       <li><span class="text-secondary">Revenue:</span> $${addCommasToNumber(movie.revenue)}</li>
-       <li><span class="text-secondary">Runtime:</span>$${movie.runtime} minutes </li>
-       <li><span class="text-secondary">Status:</span> ${movie.status}</li>
+       <li><span class="text-secondary">Number of Episodes:</span> ${show.number_of_episodes}}</li>
+       <li><span class="text-secondary">Last episode to air:</span> ${show.last_episode_to_air}</li>
+       <li><span class="text-secondary">Status:</span> ${show.status}</li>
      </ul>
      <h4>Production Companies</h4>
      <div class="list-group">
-     ${movie.production_companies.map((company) =>`<span>${company.name}</span>`).join(',')}
+     ${show.production_companies.map((company) =>`<span>${company.name}</span>`).join(',')}
      </div>
    </div>
 
@@ -305,6 +323,10 @@ function init() {
 
     case '/movie-details.html':
       displayMovieDetails()
+      break;
+
+    case '/tv-details.html':
+      displayShowDetails()
       break;
   }
 

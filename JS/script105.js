@@ -20,69 +20,6 @@ function addCommasToNumber(number)
  }
 
 
-
-//Display Slider Movies
-
-async function displaySlider()
-
-{
-  const { results } = await fetchAPIData('movie/now_playing');
-   console.log(results);
-  results.forEach((movie) =>
-  {
-    const div = document.createElement('div');
-    div.classList.add('swiper-slide');
-   
-    
-    div.innerHTML =
-    `
-    <a href ="movie-details.html?id=${movie.id}">
-    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}"/>
-    </a>
-    <h4 class ="swiper-rating">
-    <i class="swiper-rating">
-    <i class="fas fa-star text-secondary"></i>
-    ${movie.vote_average}/10
-    </h4>
-    `;
-
-    document.querySelector('.swipper-wrapper').appendChild(div);
-
-     //console.log(swipper-wrapper);
-    initSwiper();
-  })
-
-
-  function initSwiper()
-  {
-    const swiper = new swiper('.swiper', 
-      {
-        slidesPerView: 2,
-        spaceBetween:20,
-        autoplay: 
-         {
-         delay:3000,
-         },
-       breakpoints:
-      {
-        600:
-        {
-          slidesPerView: 3
-        },
-        700:
-        {
-          slidesPerView: 3
-        },
-        900:
-        {
-          slidesPerView: 3
-        },
-      }
-    });
-  }
-}
-
-
 // Function to get popular movies for homepage
 async function displayPopularMovies() {
   const { results } = await fetchAPIData('movie/popular');
@@ -351,6 +288,83 @@ async function displayShowDetails()
 }
 
 
+//Search Movies/Shows
+
+async function Search()
+{
+  console.log('Search function is being called');
+  // const queryString = window.location.search
+  // console.log(queryString); 
+  const queryString = window.location.search;
+  console.log('Full URL:', window.location.href); // Log the full URL
+  console.log('Query String:', queryString);
+  
+
+}
+
+
+//Display Slider Movies
+
+async function displaySlider()
+
+{
+  const { results } = await fetchAPIData('movie/now_playing');
+   console.log(results);
+  results.forEach((movie) =>
+  {
+    const div = document.createElement('div');
+    div.classList.add('swiper-slide');
+   
+    
+    div.innerHTML =
+    `
+    <a href ="movie-details.html?id=${movie.id}">
+    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}"/>
+    </a>
+    <h4 class ="swiper-rating">
+    <i class="swiper-rating">
+    <i class="fas fa-star text-secondary"></i>
+    ${movie.vote_average}/10
+    </h4>
+    `;
+
+    document.querySelector('.swipper-wrapper').appendChild(div);
+
+     //console.log(swipper-wrapper);
+    initSwiper();
+  })
+
+
+  function initSwiper()
+  {
+    const swiper = new Swiper('.swiper', 
+      {
+        slidesPerView: 2,
+        spaceBetween:20,
+        autoplay: 
+         {
+         delay:3000,
+         },
+       breakpoints:
+      {
+        600:
+        {
+          slidesPerView: 3
+        },
+        700:
+        {
+          slidesPerView: 3
+        },
+        900:
+        {
+          slidesPerView: 3
+        },
+      }
+    });
+  }
+}
+
+
 
   
 
@@ -402,6 +416,9 @@ function init() {
 
     case '/tv-details.html':
       displayShowDetails()
+      break;
+    case '/search.html':
+      Search()
       break;
   }
 

@@ -22,14 +22,12 @@
       <nav>
         <ul>
           <li>
-            <a class="nav-link" href="/movie-details.html">Movies</a>
+            <a class="nav-link" href="/">Movies</a>
           </li>
           <li>
             <a class="nav-link" href="/shows.html">TV Shows</a>
           </li>
-          <li>
-            <a class="nav-link" href="/tv-details.html">TV Details</a>
-          </li>
+          
         </ul>
       </nav>
     </div>
@@ -47,10 +45,9 @@
 
   <!--Search Movies-->
   <section class="search">
-    <div class="search">
       <div class="container">
         <div id="alert"></div>
-        <form action="/search.html" class="search-form"></form>
+        <form action="/search.html" method="get" class="search-form"></form>
         <!--Movies and shows radio box-->
         <div class="search-radio">
           <input type="radio" id="movie" name="type" value="movie" checked/>
@@ -63,13 +60,14 @@
           <input 
           type="text"
           name="search-term"
-          placeholder="Enter Search Item"/>
+          placeholder="Enter Search Item"
+          />
           <button class="btn" type="submit">
             <i class="fas fa-search"></i>
           </button>
         </div>
-      </div>
     </div>
+   
   </section>
 
 

@@ -43,33 +43,32 @@
   </section>
 
 
-  <!--Search Movies-->
-  <section class="search">
-      <div class="container">
-        <div id="alert"></div>
-        <form action="/search.html" method="get" class="search-form"></form>
-        <!--Movies and shows radio box-->
-        <div class="search-radio">
-          <input type="radio" id="movie" name="type" value="movie" checked/>
-          <label for="movies">Movies</label>
-          <input type ="radio" id="tv" name="type" value="tv" />
-          <label for="shows">TV shows</label>
-        </div>
-
-        <div class="search-flex">
-          <input 
+ 
+ <!-- Search Movies -->
+ <section class="search">
+  <div class="container">
+    <div id="alert"></div>
+    <form action="/search.html" class="search-form">
+      <div class="search-radio">
+        <input type="radio" id="movie" name="type" value="movie" checked />
+        <label for="movies">Movies</label>
+        <input type="radio" id="tv" name="type" value="tv" />
+        <label for="shows">TV Shows</label>
+      </div>
+      <div class="search-flex">
+        <input
           type="text"
           name="search-term"
-          placeholder="Enter Search Item"
-          />
-          <button class="btn" type="submit">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-    </div>
-   
-  </section>
-
+          id="search-term"
+          placeholder="Enter search term"
+        />
+        <button class="btn" type="submit">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
 
   <!--Popular Movies-->
   <section class="container">

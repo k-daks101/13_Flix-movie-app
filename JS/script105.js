@@ -1,23 +1,20 @@
 const global = {
   currentPage: window.location.pathname,
+  search:
+  {
+    term: '',
+    type: '',
+    page: 1,
+    totalPages: 1,
+  },
+  api: 
+  {
+    apiKey: '545c25fa9359433e17dfb101843fd850',
+    apiURL: 'https://api.themoviedb.org/3'
+  },
 };
 
 console.log(global.currentPage);
-
-// Highlight active link
-function HighlitActiveLink() {
-  const links = document.querySelectorAll('.nav-link');
-  links.forEach((link) => {
-    if (link.getAttribute('href') === global.currentPage) {
-      link.classList.add('active');
-    }
-  });
-}
-
-function addCommasToNumber(number)
- {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");  //From stackoverflow
- }
 
 
 // Function to get popular movies for homepage
@@ -65,6 +62,43 @@ async function displayPopularMovies() {
 
 //from displaying popular movies, we are about to display popular show
 
+
+async function displayPopularShows() {
+  const { results } = await fetchAPIData('tv/popular');
+
+  results.forEach((show) => {
+    const div = document.createElement('div'); // Fixed typo: Changed "docuent" to "document"
+    div.classList.add('card'); // Corrected syntax: replaced '=' with 'add' method
+    div.innerHTML = `
+      <a href="tv-details.html?id=${show.id}">
+        ${
+          show.poster_path
+            ? `<img src="https://image.tmdb.org/t/p/w500${show.poster_path}"
+          class="card-img-top"
+          alt="${show.title}"/>`
+            : `<img src="../images/no-image.jpg"
+          class="card-img-top"
+          alt="${show.title}"/>`
+        }
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">${show.name}</h5>
+        <p class="card-text">
+          <small class="text-muted">Release: ${show.first_air_date}</small>
+        </p>
+      </div>
+    `;
+
+    document.querySelector('#popular-shows').appendChild(div); // Ensure this ID matches an element in your HTML
+  });
+
+  // Removed redundant loop: This loop doesn't do anything meaningful
+  // It tries to create new div elements and add classes but doesn't append them to the DOM
+  
+ 
+  
+ 
+}
 
 
 //Function display movie details
@@ -158,49 +192,6 @@ async function displayMovieDetails()
   document.querySelector('#movie-details').appendChild(div);
 
 }
-
-
-
-
-
-
-async function displayPopularShows() {
-  const { results } = await fetchAPIData('tv/popular');
-
-  results.forEach((show) => {
-    const div = document.createElement('div'); // Fixed typo: Changed "docuent" to "document"
-    div.classList.add('card'); // Corrected syntax: replaced '=' with 'add' method
-    div.innerHTML = `
-      <a href="tv-details.html?id=${show.id}">
-        ${
-          show.poster_path
-            ? `<img src="https://image.tmdb.org/t/p/w500${show.poster_path}"
-          class="card-img-top"
-          alt="${show.title}"/>`
-            : `<img src="../images/no-image.jpg"
-          class="card-img-top"
-          alt="${show.title}"/>`
-        }
-      </a>
-      <div class="card-body">
-        <h5 class="card-title">${show.name}</h5>
-        <p class="card-text">
-          <small class="text-muted">Release: ${show.first_air_date}</small>
-        </p>
-      </div>
-    `;
-
-    document.querySelector('#popular-shows').appendChild(div); // Ensure this ID matches an element in your HTML
-  });
-
-  // Removed redundant loop: This loop doesn't do anything meaningful
-  // It tries to create new div elements and add classes but doesn't append them to the DOM
-  
- 
-  
- 
-}
-
 
 
 //Function display show details
@@ -298,6 +289,24 @@ async function Search()
   const queryString = window.location.search;
   console.log('Full URL:', window.location.href); // Log the full URL
   console.log('Query String:', queryString);
+
+  const urlParams = new URLSearchParams(queryString);
+
+  global.search.type=urlParams.get('type');
+
+  global.search.term=urlParams.get('search-term');
+
+
+  if (global.search.term !=='' && global.search.term !== null )
+    {
+      //-make requests and display results
+      const results = await searchAPIData();
+      console.log(results);   
+    }
+    else
+    {
+      showAlert('Please enter the search items')
+    }
   
 
 }
@@ -339,8 +348,8 @@ async function displaySlider()
   {
     const swiper = new Swiper('.swiper', 
       {
-        slidesPerView: 2,
-        spaceBetween:20,
+        slidesPerView: 0,
+        spaceBetween:10,
         autoplay: 
          {
          delay:3000,
@@ -349,15 +358,15 @@ async function displaySlider()
       {
         600:
         {
-          slidesPerView: 3
+          slidesPerView: 2
         },
         700:
         {
-          slidesPerView: 3
+          slidesPerView: 2
         },
         900:
         {
-          slidesPerView: 3
+          slidesPerView: 2
         },
       }
     });
@@ -366,19 +375,44 @@ async function displaySlider()
 
 
 
-  
-
-
 // Fetch data from TMDB API
 async function fetchAPIData(endpoint) {
   // Ensure your API key is secured in a production environment
-  const API_KEY = '545c25fa9359433e17dfb101843fd850';
-  const API_URL = 'https://api.themoviedb.org/3';
+  // const API_KEY = '545c25fa9359433e17dfb101843fd850';
+  // const API_URL = 'https://api.themoviedb.org/3';
+
+  const API_KEY = global.api.apiKey;
+  const API_URL = global.api.apiURL;
 
   showSpinner()
   // Fixed typo in the URL: Changed "$language" to "&language"
   const response = await fetch(`${API_URL}/${endpoint}?api_key=${API_KEY}&language=en-US`);
 
+  const data = await response.json();
+
+    
+  hideSpinner()
+
+  return data;
+
+
+}
+
+// Make request for search
+async function searchAPIData() {
+  // Ensure your API key is secured in a production environment
+  // const API_KEY = '545c25fa9359433e17dfb101843fd850';
+  // const API_URL = 'https://api.themoviedb.org/3';
+
+  const API_KEY = global.api.apiKey;
+  const API_URL = global.api.apiURL;
+
+  showSpinner()
+  // Fixed typo in the URL: Changed "$language" to "&language"
+  const response = await fetch(`${API_URL}/search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}`);
+
+  //const response = await fetch(`${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}`);
+   //type because it has to be movie type or show type
   const data = await response.json();
 
   hideSpinner()
@@ -388,6 +422,20 @@ async function fetchAPIData(endpoint) {
 
 }
 
+//Show  Alert
+
+function showAlert(message, className)
+{
+  const alertEl = document.createElement('div');
+  alertEl.classList.add('alert', className)
+  alertEl.appendChild(document.createTextNode(message));
+  document.querySelector('#alert').appendChild(alertEl);
+
+  setTimeout(() => alertEl.remove(), 2000)
+
+}
+
+//Showing and hiding the spinner
 function showSpinner()
 {
   document.querySelector('.spinner').classList.add('show')
@@ -397,9 +445,28 @@ function hideSpinner()
   document.querySelector('.spinner').classList.remove('show')
 }
 
+
+// Highlight active link
+function HighlitActiveLink() {
+  const links = document.querySelectorAll('.nav-link');
+  links.forEach((link) => {
+    if (link.getAttribute('href') === global.currentPage) {
+      link.classList.add('active');
+    }
+  });
+}
+
+
+function addCommasToNumber(number)
+ {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");  //From stackoverflow
+ }
+
+
 // Initializing the app
 function init() {
   switch (global.currentPage) {
+    case '/':
     case '/index.html':
       displaySlider();
       displayPopularMovies(); // Ensure this function is called to populate the homepage

@@ -67,6 +67,7 @@ async function displayPopularShows() {
   const { results } = await fetchAPIData('tv/popular');
 
   results.forEach((show) => {
+    console.log(show);
     const div = document.createElement('div'); // Fixed typo: Changed "docuent" to "document"
     div.classList.add('card'); // Corrected syntax: replaced '=' with 'add' method
     div.innerHTML = `
@@ -412,6 +413,65 @@ async function displaySlider()
     });
   }
 }
+async function displayShowSlider()
+
+{
+  const { results } = await fetchAPIData('tv/on_the_air');
+  //  console.log(results);
+  results.forEach((show) =>
+  {
+   
+    const div = document.createElement('div');
+    div.classList.add('swiper-slide');
+   
+    
+    div.innerHTML =
+    `
+    <a href ="tv-details.html?id=${show.id}">
+    <img src="https://image.tmdb.org/t/p/w500${show.poster_path}" alt="${show.name}"/>
+    </a>
+    <h4 class ="swiper-rating">
+    <i class="swiper-rating">
+    <i class="fas fa-star text-secondary"></i>
+    ${show.vote_average}/10
+    </h4>
+    `;
+
+    document.querySelector('.swipper-wrapperr').appendChild(div);
+
+     //console.log(swipper-wrapper);
+    initSwiper();
+  })
+
+
+  function initSwiper()
+  {
+    const swiper = new Swiper('.swiper', 
+      {
+        slidesPerView: 2,
+        spaceBetween:10,
+        autoplay: 
+         {
+         delay:3000,
+         },
+       breakpoints:
+      {
+        600:
+        {
+          slidesPerView: 2
+        },
+        700:
+        {
+          slidesPerView: 2
+        },
+        900:
+        {
+          slidesPerView: 2
+        },
+      }
+    });
+  }
+}
 
 
 
@@ -510,12 +570,14 @@ function init() {
   switch (global.currentPage) {
     case '/':
     case '/index.html':
+     
       displaySlider();
       displayPopularMovies(); // Ensure this function is called to populate the homepage
       break;
 
     case '/shows.html':
       //console.log('Shows');
+      displayShowSlider()
       displayPopularShows()
       break;
 

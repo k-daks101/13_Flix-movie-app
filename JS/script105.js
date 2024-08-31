@@ -303,6 +303,9 @@ async function Search()
       //-make requests and display results
       const {results, total_pages,page} = await searchAPIData();
 
+      global.search.page = page;
+      global.search.totalPages = total_pages
+      console.log(page,total_pages);
       if(results.length === 0)
       {
         showAlert('No results found');
@@ -325,6 +328,10 @@ async function Search()
 
 function displaySearchResults(results)
 {
+
+  //Clear previous results
+  document.querySelector('#search-results').innerHTML = ``
+  document.querySelector('#pagination').innerHTML = ``
   results.forEach((result) => {
     const div = document.createElement('div');
     div.classList.add('card');
@@ -350,8 +357,53 @@ function displaySearchResults(results)
 
     document.querySelector('#search-results').appendChild(div); // Ensure this ID matches an element in your HTML
   });
+
+  displayPagination();
 }
 
+//Create and Display pagination for search
+function displayPagination()
+{
+  const div = document.createElement('div');
+  div.classList.add('pagination');
+  div.innerHTML =
+  `
+   <button class="btn btn-primary" id="prev">Prev</button>
+   <button class="btn btn-primary" id="next">Next</button>
+   <div class="page-counter">${global.search.page} of ${global.search.totalPages}</div>
+      
+  `;
+  document.querySelector('#pagination').appendChild(div);
+
+  //Disable prev button if on first page
+  if(global.search.page === 1)
+  {
+    document.querySelector('#prev').disabled = true
+  }
+
+  //Disable the next button if on last page
+
+  if(global.search.page === global.search.totalPages)
+    {
+      document.querySelector('#next').disabled = true
+    }
+
+    //Next Page
+    document.querySelector('#next').addEventListener('click', async () =>
+    {
+      global.search.page++;
+      const {results, total_pages} = await searchAPIData();
+      displaySearchResults(results)
+    })
+
+    //Prev Page
+    document.querySelector('#prev').addEventListener('click', async () =>
+    {
+      global.search.page--;
+      const {results, total_pages} = await searchAPIData();
+      displaySearchResults(results)
+    })
+}
 
 //Display Slider Movies
 
@@ -509,7 +561,7 @@ async function searchAPIData() {
 
   showSpinner()
   // Fixed typo in the URL: Changed "$language" to "&language"
-  const response = await fetch(`${API_URL}/search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}`);
+  const response = await fetch(`${API_URL}/search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}&page=${global.search.page}`);
 
   //const response = await fetch(`${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}`);
    //type because it has to be movie type or show type
